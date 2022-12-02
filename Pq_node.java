@@ -20,7 +20,7 @@ public class Pq_node {
     int widthOfZone, heightOfZone;
 
     Pq_node(ArrayList<Point> pointsInZone, int widthOfZone, int heightOfZone, int startX, int startY, int endX,
-            int endY) {
+            int endY, boolean approach) {
         this.widthOfZone = widthOfZone;
         this.heightOfZone = heightOfZone;
         this.startX = startX;
@@ -33,9 +33,15 @@ public class Pq_node {
                 this.containsAPoint = true;
                 // this will set the center to the point that is the closest to the center of
                 // the current zone
-                this.determineCenter();
-                // System.out.println("Printing info on center");
-                // this.center.printInfo();
+                if (approach == false){
+                    this.determineCenter();
+                }
+                else {
+                    // getting the first point in the array
+                    this.center = this.pointsInZone.get(0);
+                    this.pointsInZone.remove(0);
+                }
+
             }
         } else {
             this.containsAPoint = false;
@@ -140,22 +146,22 @@ public class Pq_node {
     }
 
     void addTopLeftChild(ArrayList<Point> pointsInZone, int width, int height, int startX, int startY, int endX,
-            int endY) {
-        this.top_left = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY);
+            int endY, boolean approach) {
+        this.top_left = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY, approach);
     }
 
     void addTopRightChild(ArrayList<Point> pointsInZone, int width, int height, int startX, int startY, int endX,
-            int endY) {
-        this.top_right = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY);
+            int endY, boolean approach) {
+        this.top_right = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY, approach);
     }
 
     void addBottomLeftChild(ArrayList<Point> pointsInZone, int width, int height, int startX, int startY, int endX,
-            int endY) {
-        this.bottom_left = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY);
+            int endY, boolean approach) {
+        this.bottom_left = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY, approach);
     }
 
     void addBottomRightChild(ArrayList<Point> pointsInZone, int width, int height, int startX, int startY, int endX,
-            int endY) {
-        this.bottom_right = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY);
+            int endY, boolean approach) {
+        this.bottom_right = new Pq_node(pointsInZone, width, height, startX, startY, endX, endY, approach);
     }
 }

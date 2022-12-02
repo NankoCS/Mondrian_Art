@@ -145,40 +145,23 @@ public class Kd_tree {
         return false;
     }
 
-    // tmp for now too
-    Image makeImage(String filename) {
-        Image tmp = new Image(this.widthOfImage, this.heightOfImage);
-        this.colorNode(this.root, tmp);
-
-        try {
-            tmp.save(filename + ".png");
-        } catch (Exception e) {
-            System.out.println("error");
-        }
-        return tmp;
-    }
 
     // function that returns the leaf that we will later divide
+    // O(height(this)) = O(log n) (with n the number of nodes) because getMaxWeight and remove are in O(log n)
     Kd_node chooseLeaf() {
         AVL_Node avl_leaf = this.weights.getMaxWeight(this.weights.root);
 
         if (avl_leaf != null) {
-            // checking if at least one dimension is dividable
-            // add nbLeaves <= maxLeaves condition
-            // dont need this condition as checked this to add in avl
-            if (avl_leaf.kd_node.getHeight() >= this.minSizeToDivide
-                    && avl_leaf.kd_node.getWidth() >= this.minSizeToDivide) {
-                // then in this case the leaf is valid and we can divide it
-                this.weights.root = this.weights.remove(this.weights.root, avl_leaf.weight);
-                return avl_leaf.kd_node;
-                // remove from tree here not in the getmax in avl
-            }
+            // no need to check if the two dimensions are valid as we check these conditions before adding a weight (and its linked kd_node) into the AVL
+            this.weights.root = this.weights.remove(this.weights.root, avl_leaf.weight);
+            return avl_leaf.kd_node;
         }
         return null;
     }
 
     // function that will change the divisionAxis and divisionCoordinate attributes
     // of the given leaf
+    // O(1) because only doing constant time operations
     boolean chooseDivision(Kd_node leaf) {
         if (leaf != null) {
             // at this point, we know that the leaf is dividable (each dimension >=
@@ -233,25 +216,13 @@ public class Kd_tree {
             int lower_bound = (int) Math.ceil(Math.min(second_bound, first_bound));
             // System.out.println("[" + lower_bound + ", " + upper_bound + "]");
             if (upper_bound - lower_bound <= 0) {
-                // means we can't divide here
-
-                System.out.println("\n Problem with bounds \n");
-                // return something and treat it when calling functions, that way we know when
-                // theres a problem
-                // bool error = makeDivision(chooseLeaf(kd_tree))
-                // while error == true and nbLeaves not maxed out
-                // error = makeDiv
+                System.out.println("\n Couldn't go further because of bounds.\n");
                 return false;
             }
             // getting the random coordinate where we will perform the division
-            // System.out.print("Lower Bound: ");
-            // System.out.print(lower_bound);
-            // System.out.print(" - Upper Bound: ");
-            // System.out.print(upper_bound);
             // getting a random int in [lower_bound, upper_bound]
             int randomCoordinate = random.nextInt((upper_bound - lower_bound) + 1) + lower_bound;
-            // System.out.print(" - Chosen coordinate: ");
-            // System.out.println(randomCoordinate);
+
             // set the divisionCoordinate to the randomly obtained one
             leaf.setDivisionCoordinate(randomCoordinate);
             return true;
@@ -260,7 +231,7 @@ public class Kd_tree {
         return false;
     }
 
-    // done but only with normal distrib for now
+    // O(1) because only calling constant time operations (random functions are in O(1))
     void chooseColor(Kd_node leaf, Color parentColor) {
 
         Color[] tabOfColors = { Color.RED, Color.BLUE, Color.YELLOW, Color.BLACK, Color.WHITE };
@@ -288,48 +259,29 @@ public class Kd_tree {
         // this.weights.parcours_sym(this.weights.root);
         Kd_node chosenleaf = chooseLeaf();
         boolean div_ok = makeDivision(chosenleaf);
-        // System.out.println("Parcours sym apres premiere division");
-        // this.weights.parcours_sym(this.weights.root);
-        // System.out.println();
+
         while (this.nbOfLeaves < this.maxLeaves && div_ok){
             i+=1;
             chosenleaf = chooseLeaf();
             div_ok = makeDivision(chosenleaf);
-            // System.out.print("Parcours sym apres ");
-            // System.out.print(Integer.toString(i));
-            // System.out.println("-eme division");
-            // this.weights.parcours_sym(this.weights.root);
-            // System.out.print("div_ok: ");
-            // System.out.print(div_ok);
-            // System.out.print(" - number of divisions: ");
-            // System.out.println(i);
-            // System.out.println();
         }
         // tmp for now
-        System.out.println(i);
+        System.out.println(i+1 + " leaves were created when using these parameters.");
         return this;
     }
 
-    Kd_tree generateBetterRandomTree() {
-        // function that returns a random tree when using our own strategy
 
-        // in this case, strategy = true
-
-        // tmp for now
-        return null;
-    }
+    // generateBetterRandomTree function is in our Pq_tree.java file
 
 
     Image toImage(String filename) {
         // method that, given the name of a file in the parameters, creates the canvas
-        // from this Kd_tree
+        // from the given Kd_tree
         // idea:
         // use a function colorNode() that will:
-        // if the given node is a division, then draw the line wrt its width etc, then
-        // call colorNode() on each of its child and passing as parameters the new
-        // updated coordinates of this child
-        // if the given node is a leaf, then use the setRectangle() function to color
-        // the zone associated with the coordinates given in parameter
+        // if the given node is a division, then draw the line wrt its width etc, 
+        // then call colorNode() which will recursively
+        // color the lines, then the zones/leaves
         Image tmp = new Image(this.widthOfImage, this.heightOfImage);
         this.colorNode(this.root, tmp);
 
