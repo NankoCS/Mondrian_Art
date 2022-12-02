@@ -33,10 +33,9 @@ public class Pq_node {
                 this.containsAPoint = true;
                 // this will set the center to the point that is the closest to the center of
                 // the current zone
-                if (approach == false){
+                if (approach == false) {
                     this.determineCenter();
-                }
-                else {
+                } else {
                     // getting the first point in the array
                     this.center = this.pointsInZone.get(0);
                     this.pointsInZone.remove(0);
@@ -61,17 +60,21 @@ public class Pq_node {
         this.bottom_left = null;
         this.bottom_right = null;
 
-
     }
 
-    // determining the center of the current zone
+    // O(nbOfPoints) as we are going through all of the points to find the best
+    // potential match to a median point
+    // general idea:
+    // calculating the euclidian distance of a point and keeping it in memory if
+    // it's the closest to the fictional central point of this zone
     void determineCenter() {
         if (pointsInZone.size() > 0) {
             int centerOnXAxis = (int) (this.endX + this.startX) / 2;
 
             int centerOnYAxis = (int) (this.endY + this.startY) / 2;
 
-            // System.out.println("Fictional center: (" + centerOnXAxis + ", " + centerOnYAxis + ")");
+            // System.out.println("Fictional center: (" + centerOnXAxis + ", " +
+            // centerOnYAxis + ")");
             int bestIndex = 0;
             double inf = Double.POSITIVE_INFINITY;
             double lowestDistance = inf;
@@ -103,12 +106,9 @@ public class Pq_node {
         }
     }
 
+    // O(a) with a being the number of points in the current node/zone
     // sorting pointsInZone into 4 arrays of points, each one corresponding to one
-    // zone with:
-    // array[0]:top left
-    // array[1]:top right
-    // array[2]:bottom left
-    // array[3]:bottom right
+    // zone
     fourZones sortingPoints() {
         if (this.containsAPoint) {
             ArrayList<Point> top_left = new ArrayList<>();

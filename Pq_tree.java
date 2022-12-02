@@ -15,11 +15,12 @@ public class Pq_tree {
     double sameColorProbability;
     boolean approach;
 
-    // boolean approach corresponds to how you want to choose the points to divide, by time of arrival in the array or by choosing the median points
+    // boolean approach corresponds to how you want to choose the points to divide,
+    // by time of arrival in the array (FIFO) or by choosing the median points
     // false for median point approach, true for other approach
     Pq_tree(ArrayList<Point> pointsInZone, int widthOfImage, int heightOfImage, int nbOfPoints, int widthOfLine,
             double sameColorProbability, long seed, boolean approach) {
-        
+
         this.approach = approach;
         this.widthOfImage = widthOfImage;
         this.heightOfImage = heightOfImage;
@@ -29,14 +30,7 @@ public class Pq_tree {
         this.sameColorProbability = sameColorProbability;
         this.random = new Random(this.seed);
 
-        // if (pointsInZone != null) {
-        // for (int i = 0; i < pointsInZone.size(); i++) {
-        // pointsInZone.get(i).printInfo();
-        // }
-        // }
-        
         this.root = new Pq_node(pointsInZone, widthOfImage, heightOfImage, 0, 0, widthOfImage, heightOfImage, approach);
-
 
         this.generateSubtrees(this.root);
 
@@ -49,7 +43,8 @@ public class Pq_tree {
                 seed, approach);
     }
 
-    // done but only with normal distrib for now
+    // O(1)
+    // same idea as first strategy
     void chooseColor(Pq_node leaf, Color parentColor) {
         if (leaf != null) {
             Color[] tabOfColors = { Color.RED, Color.BLUE, Color.YELLOW, Color.BLACK, Color.WHITE };
@@ -66,6 +61,18 @@ public class Pq_tree {
         }
     }
 
+    // O(nbOfPoints * n) as in the worst case scenario, all of the points are always
+    // going in the same zone
+    // this worst case can only happen when using a FIFO approach when picking the
+    // central point of a zone, otherwise by picking the median point we escape this
+    // worst case scenario
+    // general idea:
+    // a node contains the list of ALL of the points present in its zone, we then
+    // want to split these points into 4 different lists, each one corresponding to
+    // a specific zone
+    // when we have these 4 lists, we then create the 4 child nodes of the current
+    // node using the adequate parameters and then generate recursively all of the
+    // subtrees needed
     void generateSubtrees(Pq_node node) {
         if (node != null) {
             if (node.pointsInZone.size() >= 0) {
@@ -113,7 +120,10 @@ public class Pq_tree {
         }
     }
 
-    // color function, maybe changes later on
+    // O(n) with n being the number of nodes in the tree
+    // Coloring if it's a leaf (no central point in the zone), or coloring its 4
+    // children if it contains a central point
+    // this will recursively go through all of the leaves of the tree
     void colorNode(Pq_node node, Image image) {
         if (node != null) {
             // if it's only a leaf

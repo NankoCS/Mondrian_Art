@@ -21,7 +21,6 @@ public class Kd_node {
 
     private Kd_node left, right;
 
-
     // constructor
     Kd_node(int width, int height, int startX, int startY, int endX, int endY) {
         this.width = width;
